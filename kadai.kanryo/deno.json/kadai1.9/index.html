@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minimal Todo App</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app-container today-container">
+      <h1 class="today-title">Today's TODO</h1>
+      <ul id="today-list" class="task-list"></ul>
+    </div>
+
+    <div class="app-container">
+      <h1>My TODO</h1>
+      <ul id="todo-list" class="task-list"></ul>
+    </div>
+
+    <button id="open-modal-btn" class="fab-btn">＋</button>
+
+    <div id="modal-overlay" class="modal-overlay">
+      <div class="modal-content">
+        <h3>TO DO</h3>
+        <div class="input-fields">
+          <input type="text" id="todo-input" placeholder="タスクを入力" />
+          <input type="date" id="todo-date" />
+        </div>
+        <div class="modal-buttons">
+          <button id="cancel-btn" class="btn-cancel">キャンセル</button>
+          <button id="add-btn" class="btn-add">完了</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert-overlay" class="modal-overlay" style="z-index: 2000">
+      <div class="modal-content alert-box">
+        <h3>入力エラー</h3>
+        <p>内容を入力してください</p>
+        <div class="modal-buttons">
+          <button id="alert-ok-btn" class="btn-add">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
