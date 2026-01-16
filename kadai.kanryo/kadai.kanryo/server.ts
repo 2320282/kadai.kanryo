@@ -17,15 +17,9 @@ app.get("/", serveStatic({ path: "./kadai.kanryo/index.html" }));
 // CSSなどの他のファイルを kadai.kanryo フォルダ全体から探す設定
 app.get("/*", serveStatic({ root: "./kadai.kanryo" }));
 
-// --- 省略 (app.get("/todos") など) ---
-// --- 以下、既存の app.get("/todos", ...) などの処理 ---
-
 app.get("/todos", async (c) => {
   // ... (略)
 });
-
-// 最後はこの行で終わる
-Deno.serve(app.fetch);
 // GET: 取得
 app.get("/todos", async (c) => {
   const iter = kv.list({ prefix: ["todos"] });
