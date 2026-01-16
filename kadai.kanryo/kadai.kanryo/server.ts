@@ -12,10 +12,8 @@ app.use("/*", cors());
 
 // 2. 静的ファイルの配信
 // エラー回避のため、まず index.html があるか確認して配信します
-app.get("/", serveStatic({ path: "./kadai.kanryo/index.html" }));
-// CSSや画像などのためのルート設定
-app.get("/*", serveStatic({ root: "./kadai.kanryo" }));
-
+app.get("/", serveStatic({ path: "kadai.kanryo/index.html" }));
+app.get("/*", serveStatic({ root: "kadai.kanryo" }));
 // 3. API（Todoリストの取得など）
 app.get("/todos", async (c) => {
   try {
