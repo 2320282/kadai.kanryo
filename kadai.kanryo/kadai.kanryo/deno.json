@@ -1,8 +1,3 @@
 {
-  "imports": {
-    "hono": "jsr:@hono/hono@^4.0.0"
-  },
-  "tasks": {
-    "dev": "deno run --allow-net --unstable-kv server.ts"
-  }
+  "unstable": ["kv"]
 }

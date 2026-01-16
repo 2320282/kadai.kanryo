@@ -1,5 +1,6 @@
-import { Hono } from "https://deno.land/x/hono@v4.0.0/mod.ts";
-import { cors } from "https://deno.land/x/hono@v4.0.0/middleware.ts";
+import { Hono } from "jsr:@hono/hono";
+import { cors } from "jsr:@hono/hono/cors"; // ← これを追加
+import { serveStatic } from "jsr:@hono/hono/deno";
 
 export const app = new Hono();
 const kv = await Deno.openKv();
