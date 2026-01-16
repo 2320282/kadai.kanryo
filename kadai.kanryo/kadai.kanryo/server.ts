@@ -12,6 +12,16 @@ app.use("/*", cors());
 
 // 2. 静的ファイルの配信
 // エラー回避のため、まず index.html があるか確認して配信します
+// 修正案：パスの "./" を外して直接指定する
+
+app.get("/check", (c) => {
+  const files = [];
+  for (const entry of Deno.readDirSync(".")) {
+    files.push(entry.name);
+  }
+  return c.json({ current_dir_files: files });
+});
+
 app.get("/", serveStatic({ path: "kadai.kanryo/index.html" }));
 app.get("/*", serveStatic({ root: "kadai.kanryo" }));
 // 3. API（Todoリストの取得など）
