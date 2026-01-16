@@ -1,12 +1,31 @@
 import { Hono } from "jsr:@hono/hono";
-import { cors } from "jsr:@hono/hono/cors"; // ← これを追加
+import { cors } from "jsr:@hono/hono/cors"; // もし無ければ追加
 import { serveStatic } from "jsr:@hono/hono/deno";
 
 export const app = new Hono();
 const kv = await Deno.openKv();
 
+// --- 省略 (importやappの定義) ---
+
+// 1. CORSの設定
 app.use("/*", cors());
 
+// 2. 静的ファイルの設定
+// index.html が kadai.kanryo/index.html にある場合
+app.get("/", serveStatic({ path: "./kadai.kanryo/index.html" }));
+
+// CSSなどの他のファイルを kadai.kanryo フォルダ全体から探す設定
+app.get("/*", serveStatic({ root: "./kadai.kanryo" }));
+
+// --- 省略 (app.get("/todos") など) ---
+// --- 以下、既存の app.get("/todos", ...) などの処理 ---
+
+app.get("/todos", async (c) => {
+  // ... (略)
+});
+
+// 最後はこの行で終わる
+Deno.serve(app.fetch);
 // GET: 取得
 app.get("/todos", async (c) => {
   const iter = kv.list({ prefix: ["todos"] });
