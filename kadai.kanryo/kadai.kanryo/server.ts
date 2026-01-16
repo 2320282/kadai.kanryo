@@ -23,6 +23,7 @@ app.get("/check", (c) => {
 });
 
 // パスの最初に "kadai.kanryo/" をしっかり含める
+// 修正後：フォルダ名をしっかり指定する
 app.get("/", serveStatic({ path: "kadai.kanryo/index.html" }));
 app.get("/*", serveStatic({ root: "kadai.kanryo" }));
 // 3. API（Todoリストの取得など）
