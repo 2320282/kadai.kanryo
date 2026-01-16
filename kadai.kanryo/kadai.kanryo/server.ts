@@ -22,6 +22,7 @@ app.get("/check", (c) => {
   return c.json({ current_dir_files: files });
 });
 
+// パスの最初に "kadai.kanryo/" をしっかり含める
 app.get("/", serveStatic({ path: "kadai.kanryo/index.html" }));
 app.get("/*", serveStatic({ root: "kadai.kanryo" }));
 // 3. API（Todoリストの取得など）
