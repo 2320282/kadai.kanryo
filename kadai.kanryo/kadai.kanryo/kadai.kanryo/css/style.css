@@ -1,0 +1,115 @@
+/* 全体のベース */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #f5f7fa;
+  display: flex;
+  flex-direction: column; /* 要素を縦に並べる */
+  align-items: center;
+  padding: 40px 20px;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* 入力エリア */
+#input-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 500px;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  flex-grow: 1;
+}
+
+/* リスト本体（ここを縦に並べる！） */
+ul {
+  list-style: none;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column; /* 子要素(li)を縦に並べる */
+  gap: 12px; /* 項目間のスキマ */
+}
+
+/* 各ToDo項目（1行） */
+li {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  display: flex; /* ボタン・テキスト・削除を横に並べる */
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.1s, background-color 0.3s;
+}
+
+/* 完了ボタン */
+.complete-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #007bff;
+  background: white;
+  color: #007bff;
+  cursor: pointer;
+  margin-right: 15px;
+  flex-shrink: 0; /* ボタンが潰れないように固定 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* タスクテキスト部分 */
+.task-text {
+  flex-grow: 1; /* 中央を広げる */
+  font-size: 16px;
+  color: #333;
+}
+
+/* 削除ボタン */
+.delete-btn {
+  background: #ffeded;
+  color: #ff4d4d;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+.delete-btn:hover {
+  background: #ff4d4d;
+  color: white;
+}
+
+/* --- 【重要】完了状態のスタイル --- */
+li.completed {
+  background-color: #f9f9f9;
+  opacity: 0.7;
+}
+
+li.completed .task-text {
+  text-decoration: line-through; /* 取り消し線 */
+  color: #888;
+}
+
+li.completed .complete-btn {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
