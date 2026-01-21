@@ -13,12 +13,9 @@ app.use("*", async (c, next) => {
 });
 
 // --- 2. 確実にファイルを探す設定 ---
-// "/" にアクセスしたとき、フォルダの中にある index.html を探す
-// 1. index.html の場所を CSS フォルダの中に指定する
-app.get("/", serveStatic({ path: "kadai.kanryo/CSS/index.html" }));
-
-// 2. 他のファイル（CSSファイルなど）を探す基準のフォルダを指定
-app.get("/*", serveStatic({ root: "kadai.kanryo/CSS" }));
+// 修正後：CSSフォルダの中のindex.htmlを指定する
+app.get("/", serveStatic({ path: "./CSS/index.html" }));
+app.get("/*", serveStatic({ root: "./CSS" }));
 // --- 3. API（Todoリスト） ---
 app.get("/todos", async (c) => {
   const iter = kv.list({ prefix: ["todos"] });
