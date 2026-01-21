@@ -1,84 +1,67 @@
-const API_URL = "http://localhost:8000/todos";
+const todoInput = document.getElementById("todo-input");
+const todoDate = document.getElementById("todo-date");
+const addBtn = document.getElementById("add-btn");
+const todoList = document.getElementById("todo-list");
+const todayList = document.getElementById("today-list");
 
-// 描画関数
-function renderTask(task) {
-  const li = document.createElement("li");
-  // サーバーのデータに合わせてクラスを付ける
-  if (task.completed) {
-    li.classList.add("completed");
-  }
+// 重要：URLを /todos だけにする（localhostを書かない）
+const API_URL = "/todos";
 
-  li.innerHTML = `
-    <button class="complete-btn">${task.completed ? "●" : "○"}</button>
-    <div class="task-info">
-      <span class="task-text">${task.text}</span>
-    </div>
-    <button class="delete-btn">削除</button>
-  `;
-
-  // --- 【重要】完了ボタンの動作 ---
-  const compBtn = li.querySelector(".complete-btn");
-  compBtn.onclick = async () => {
-    console.log("完了ボタンが押されました！ ID:", task.id); // 動作確認用
-
-    // 現在のステータスを反転させてサーバーに送る
-    const nextStatus = !task.completed;
-    await updateTask(task.id, nextStatus);
-  };
-
-  // --- 削除ボタンの動作 ---
-  const delBtn = li.querySelector(".delete-btn");
-  delBtn.onclick = async () => {
-    if (confirm("削除しますか？")) {
-      await deleteTask(task.id);
-    }
-  };
-
-  document.getElementById("todo-list").appendChild(li);
+// タスク読み込み
+async function loadTodos() {
+  const res = await fetch(API_URL);
+  const todos = await res.json();
+  renderTodos(todos);
 }
 
-// サーバーに更新リクエストを送る関数
-async function updateTask(id, newStatus) {
-  console.log(
-    `サーバーに更新送信中... URL: ${API_URL}/${id}, Status: ${newStatus}`
-  );
+// タスク追加
+addBtn.addEventListener("click", async () => {
+  const text = todoInput.value;
+  const date = todoDate.value;
+  if (!text) return;
 
-  try {
-    const res = await fetch(`${API_URL}/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completed: newStatus }),
-    });
+  await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, date }),
+  });
 
-    if (res.ok) {
-      console.log("更新成功！画面をリロードします。");
-      location.reload(); // 一番確実な方法で画面を更新
+  todoInput.value = "";
+  loadTodos();
+  // モダルを閉じる処理などがあればここに追加
+  document.getElementById("modal-overlay").classList.remove("active");
+});
+
+// タスク完了（更新）
+async function toggleTodo(id, completed) {
+  await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ completed }),
+  });
+  loadTodos();
+}
+
+// タスク表示（一部省略、あなたのコードに合わせて調整してください）
+function renderTodos(todos) {
+  todoList.innerHTML = "";
+  todayList.innerHTML = "";
+
+  const today = new Date().toISOString().split("T")[0];
+
+  todos.forEach((todo) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <input type="checkbox" ${todo.completed ? "checked" : ""} onchange="toggleTodo('${todo.id}', this.checked)">
+      <span>${todo.text} (${todo.date})</span>
+    `;
+
+    if (todo.date === today) {
+      todayList.appendChild(li);
     } else {
-      const errorData = await res.json();
-      console.error("サーバーがエラーを返しました:", errorData);
+      todoList.appendChild(li);
     }
-  } catch (err) {
-    console.error(
-      "ネットワークエラー（サーバーが動いていない可能性があります）:",
-      err
-    );
-    alert("サーバーに接続できませんでした。Denoを起動していますか？");
-  }
+  });
 }
 
-// データ取得
-async function fetchTodos() {
-  const list = document.getElementById("todo-list");
-  list.innerHTML = "読み込み中...";
-  try {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    list.innerHTML = "";
-    data.forEach((task) => renderTask(task));
-  } catch (err) {
-    list.innerHTML = "データ取得エラー";
-  }
-}
-
-// 起動時に実行
-window.onload = fetchTodos;
+loadTodos();
