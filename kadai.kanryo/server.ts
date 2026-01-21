@@ -1,27 +1,29 @@
 import { Hono } from "jsr:@hono/hono";
-import { cors } from "jsr:@hono/hono/cors"; // もし無ければ追加
 import { serveStatic } from "jsr:@hono/hono/deno";
 
-export const app = new Hono();
+const app = new Hono();
 const kv = await Deno.openKv();
 
-// 1. CORSの設定
-app.use("/*", cors());
-
-// 2. 静的ファイルの配信設定（ここに追加！）
-// GitHubの「kadai.kanryo」フォルダの中に index.html がある場合の設定です
-app.get("/", serveStatic({ path: "./kadai.kanryo/index.html" }));
-app.get("/*", serveStatic({ root: "./" }));
-
-// --- 以下、既存の app.get("/todos", ...) などの処理 ---
-
-app.get("/todos", async (c) => {
-  // ... (略)
+// --- 1. 手動でCORSを設定（モジュール不要） ---
+app.use("*", async (c, next) => {
+  await next();
+  c.header("Access-Control-Allow-Origin", "*");
+  c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  c.header("Access-Control-Allow-Headers", "Content-Type");
 });
 
-// 最後はこの行で終わる
-Deno.serve(app.fetch);
-// GET: 取得
+// --- 2. 確実にファイルを探す設定 ---
+// "/" にアクセスしたとき、フォルダの中にある index.html を探す
+app.get("/", (c) => {
+  return serveStatic({ path: "./kadai.kanryo/index.html" })(c);
+});
+
+// その他の静的ファイル（CSS/JSなど）
+app.get("/*", (c) => {
+  return serveStatic({ root: "./kadai.kanryo" })(c);
+});
+
+// --- 3. API（Todoリスト） ---
 app.get("/todos", async (c) => {
   const iter = kv.list({ prefix: ["todos"] });
   const todos = [];
@@ -29,7 +31,6 @@ app.get("/todos", async (c) => {
   return c.json(todos);
 });
 
-// POST: 追加
 app.post("/todos", async (c) => {
   const body = await c.req.json();
   const id = `task-${Date.now()}`;
@@ -38,20 +39,16 @@ app.post("/todos", async (c) => {
   return c.json(newTodo);
 });
 
-// PUT: 更新 (ここが完了ボタンの正体)
 app.put("/todos/:id", async (c) => {
   const id = c.req.param("id");
   const body = await c.req.json();
   const res = await kv.get(["todos", id]);
   if (!res.value) return c.json({ error: "Not Found" }, 404);
-
-  // 既存のデータに、新しい完了ステータスを上書き
-  const updated = { ...res.value, completed: body.completed };
+  const updated = { ...(res.value as object), completed: body.completed };
   await kv.set(["todos", id], updated);
   return c.json(updated);
 });
 
-// DELETE: 削除
 app.delete("/todos/:id", async (c) => {
   const id = c.req.param("id");
   await kv.delete(["todos", id]);
