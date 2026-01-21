@@ -14,9 +14,8 @@ app.use("*", async (c, next) => {
 
 // --- 2. 確実にファイルを探す設定 ---
 // 修正後：CSSフォルダの中のindex.htmlを指定する
-app.get("/", serveStatic({ path: "./CSS/index.html" }));
-app.get("/*", serveStatic({ root: "./CSS" }));
-// --- 3. API（Todoリスト） ---
+app.get("/", serveStatic({ path: "./index.html" }));
+app.get("/*", serveStatic({ root: "./" }));
 app.get("/todos", async (c) => {
   const iter = kv.list({ prefix: ["todos"] });
   const todos = [];
